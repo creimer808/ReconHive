@@ -1,23 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import axios from 'axios';
 
 function App() {
+  const [networkScanResult, setNetworkScanResult] = React.useState('');
+  const [webScanResult, setWebScanResult] = React.useState('');
+
+  async function handleNetworkScan(target) {
+    try {
+      const response = await axios.post('http://localhost:5000/scan/network', { target });
+      setNetworkScanResult(response.data.output);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function handleWebScan(target) {
+    try {
+      const response = await axios.post('http://localhost:5000/scan/web', { target });
+      setWebScanResult(response.data.output);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Recon Tool</h1>
+      <input type="text" placeholder="Enter network target" onChange={(e) => handleNetworkScan(e.target.value)} />
+      <pre>{networkScanResult}</pre>
+
+      <input type="text" placeholder="Enter web target (hostname)" onChange={(e) => handleWebScan(e.target.value)} />
+      <pre>{webScanResult}</pre>
     </div>
   );
 }

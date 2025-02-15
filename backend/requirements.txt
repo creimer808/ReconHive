@@ -1,0 +1,7 @@
+fastapi==0.78.0
+uvicorn==0.15.0
+celery==5.2.7
+redis==4.3.4
+sqlalchemy==1.4.36
+psycopg2-binary==2.9.3
+requests==2.27.1

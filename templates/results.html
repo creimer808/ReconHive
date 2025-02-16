@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nmap Results</title>
+</head>
+<body>
+    <h1>Nmap from Browser Results</h1>
+
+    {% if output %}
+      <pre>{{ output }}</pre>
+    {% else %}
+      <p>No Nmap output available.</p>
+    {% endif %}
+
+    <a href="{{ url_for('index') }}">Run Nmap Again</a>
+</body>
+</html>

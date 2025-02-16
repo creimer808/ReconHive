@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nmap Flask App</title>
+</head>
+<body>
+    <h1>Nmap from Browser</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul>
+        {% for category, message in messages %}
+          <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="/">
+        <label for="target_ip">Enter IP address:</label>
+        <input type="text" id="target_ip" name="target_ip">
+        <button type="submit">Run Nmap</button>
+    </form>
+
+    {% if output %}
+      <h2>Nmap Output</h2>
+      <pre>{{ output }}</pre>
+    {% else %}
+      <p>No Nmap output available.</p>
+    {% endif %}
+
+    <a href="{{ url_for('index') }}">Run Nmap Again</a>
+</body>
+</html>

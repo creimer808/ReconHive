@@ -6,7 +6,6 @@ ReconHive is an all-in-one network mapping and security reconnaissance tool with
 ## Features
 - 🔍 **Network Scanning** with Nmap & Masscan
 - 🌐 **Web Vulnerability Scanning** using Nikto
-- 💀 **Exploitation Testing** via Metasploit
 - 🐝 **Automated Reconnaissance** using Sn1per
 - 📊 **Web Dashboard** for easy control & results visualization
 - 🚀 **One-Command Deployment** via Docker

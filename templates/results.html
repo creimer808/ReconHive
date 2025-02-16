@@ -1,41 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <!-- Meta tags for character encoding and responsive design -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <!-- Title of the page displayed in the browser tab -->
-    <title>Nmap Results</title>
+{% extends 'base.html' %}
 
-    <!-- Link to Bootstrap CSS for styling the page (using a CDN) -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
-    <!-- Main container with top margin -->
-    <div class="container mt-5">
-        <!-- Card for displaying the results -->
-        <div class="card shadow-lg p-4">
-            <!-- Page title displayed at the top -->
-            <h2 class="text-center">📊 Nmap Scan Results</h2>
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center">📊 Nmap Scan Results</h2>
 
-            <!-- Conditional display of Nmap scan results -->
-            {% if output %}
-                <!-- If there is output from Nmap, display it inside a <pre> tag with formatting -->
-                <pre class="mt-4 p-3 bg-dark text-light rounded">{{ output }}</pre>
-            {% else %}
-                <!-- If no output is available, show a message indicating no results -->
-                <p class="text-center mt-3">No Nmap output available.</p>
-            {% endif %}
-        </div>
+        <!-- Display verbose output -->
+        <h4>Verbose Output</h4>
+        <pre class="mt-4 p-3 bg-dark text-light rounded">{{ scan.verbose_output }}</pre>
 
-        <!-- Button to allow the user to run another scan -->
-        <div class="text-center mt-4">
-            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">🔄 Run Another Scan</a>
-        </div>
+        <!-- Display scan results -->
+        <h4>Scan Results</h4>
+        {% if scan.scan_output %}
+            <pre class="mt-4 p-3 bg-dark text-light rounded">{{ scan.scan_output }}</pre>
+        {% else %}
+            <p class="text-center mt-3">No Nmap output available.</p>
+        {% endif %}
     </div>
 
-    <!-- Bootstrap JavaScript for handling interactive components (using a CDN) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <!-- Button to run another scan -->
+    <div class="text-center mt-4">
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">🔄 Run Another Scan</a>
+    </div>
+
+    <!-- Button to go to scan history -->
+    <div class="text-center mt-4">
+        <a href="{{ url_for('history') }}" class="btn btn-outline-secondary">🗂 View Scan History</a>
+    </div>
+</div>
+{% endblock %}

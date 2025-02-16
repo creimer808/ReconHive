@@ -38,8 +38,14 @@ SCAN_OPTIONS = {
     "--script=ssl-heartbleed -v": "SSL Vulnerability Scan (Heartbleed) - Verbose"
 }
 
-@app.route('/', methods=['GET', 'POST'])
+# Home route, redirects to Nmap scanner page
+@app.route('/')
 def index():
+    return redirect(url_for('nmap_index'))  # Redirect to Nmap scanner page
+
+# Nmap functionality
+@app.route('/nmap', methods=['GET', 'POST'])
+def nmap_index():
     if request.method == 'POST':
         target_ip = request.form.get('target_ip')
         scan_type = request.form.get('scan_type')
@@ -47,14 +53,14 @@ def index():
 
         if not target_ip:
             flash("Please enter an IP address.")
-            return redirect(url_for('index'))
+            return redirect(url_for('nmap_index'))
 
         try:
             # Handle custom command
             if scan_type == "custom":
                 if not custom_command:
                     flash("Please enter a custom Nmap command.")
-                    return redirect(url_for('index'))
+                    return redirect(url_for('nmap_index'))
                 custom_args = shlex.split(custom_command)
             else:
                 custom_args = shlex.split(scan_type)
@@ -72,48 +78,40 @@ def index():
             verbose_output = result.stderr
             nmap_output = result.stdout
 
-            # If Nmap fails, show error and redirect
             if result.returncode != 0:
                 flash("Nmap command failed.")
-                return redirect(url_for('index'))
+                return redirect(url_for('nmap_index'))  # Redirect to Nmap index
 
             # Create the scan record
-            new_scan = ScanHistory(target_ip=target_ip, scan_type=scan_type, 
+            new_scan = ScanHistory(target_ip=target_ip, scan_type='nmap', 
                                    scan_output=nmap_output, verbose_output=verbose_output)
             db.session.add(new_scan)
             db.session.commit()
 
             # Pass the new scan object to results page
-            return render_template('results.html', scan=new_scan)
+            return render_template('nmap/results.html', scan=new_scan)
 
         except Exception as e:
             flash(f"An error occurred: {str(e)}")
-            return redirect(url_for('index'))
+            return redirect(url_for('nmap_index'))  # Ensure this redirects correctly to Nmap
 
-    return render_template('index.html', scan_options=SCAN_OPTIONS)
+    return render_template('nmap/index.html', scan_options=SCAN_OPTIONS)
 
+@app.route('/nmap/history')
+def nmap_history():
+    scans = ScanHistory.query.filter_by(scan_type='nmap').order_by(ScanHistory.timestamp.desc()).all()
+    return render_template('nmap/history.html', scans=scans)
 
-@app.route('/history')
-def history():
-    # Fetch all scan history records from the database
-    scans = ScanHistory.query.order_by(ScanHistory.timestamp.desc()).all()
-    return render_template('history.html', scans=scans)
-
-@app.route('/view_result/<int:scan_id>')
-def view_result(scan_id):
-    # Fetch the specific scan record from the database
+@app.route('/nmap/view_result/<int:scan_id>')
+def nmap_view_result(scan_id):
     scan = ScanHistory.query.get(scan_id)
-
     if not scan:
         flash('Scan record not found.')
-        return redirect(url_for('history'))
+        return redirect(url_for('nmap_history'))
+    return render_template('nmap/results.html', scan=scan)
 
-    # Pass the scan details to the results page
-    return render_template('results.html', scan=scan)
-
-@app.route('/delete_scan/<int:scan_id>', methods=['POST'])
-def delete_scan(scan_id):
-    # Delete a specific scan record from the database
+@app.route('/nmap/delete_scan/<int:scan_id>', methods=['POST'])
+def nmap_delete_scan(scan_id):
     scan_to_delete = ScanHistory.query.get(scan_id)
     if scan_to_delete:
         db.session.delete(scan_to_delete)
@@ -121,7 +119,7 @@ def delete_scan(scan_id):
         flash('Scan record deleted successfully.')
     else:
         flash('Scan record not found.')
-    return redirect(url_for('history'))
+    return redirect(url_for('nmap_history'))
 
 if __name__ == '__main__':
     with app.app_context():

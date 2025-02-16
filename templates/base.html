@@ -8,19 +8,35 @@
 </head>
 <body class="bg-light">
 
-<!-- Sidebar -->
-<div class="d-flex" id="sidebar">
+<!-- Top Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('index') }}">ReconHive</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('nmap_index') }}">Nmap</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Sidebar and Main Content -->
+<div class="d-flex">
     <div class="bg-dark p-3" style="width: 250px; height: 100vh;">
-        <!-- Clickable "ReconHive" link -->
         <h3 class="text-white text-center">
-            <a href="{{ url_for('index') }}" class="text-white text-decoration-none">ReconHive</a>
+            <a href="{{ url_for('nmap_index') }}" class="text-white text-decoration-none">ReconHive</a>
         </h3>
         <ul class="nav flex-column mt-5">
             <li class="nav-item">
-                <a href="{{ url_for('index') }}" class="nav-link text-white">Run a Scan</a>
+                <a href="{{ url_for('nmap_index') }}" class="nav-link text-white">Run a Scan</a>
             </li>
             <li class="nav-item">
-                <a href="{{ url_for('history') }}" class="nav-link text-white">Scan History</a>
+                <a href="{{ url_for('nmap_history') }}" class="nav-link text-white">Scan History</a>
             </li>
         </ul>
     </div>

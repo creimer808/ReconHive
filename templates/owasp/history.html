@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center">🗂 Scan History</h2>
+
+        {% if scans %}
+            <table class="table table-bordered mt-4">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Target IP</th>
+                        <th>Scan Type</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for scan in scans %}
+                        <tr>
+                            <td>{{ scan.id }}</td>
+                            <td>{{ scan.target_ip }}</td>
+                            <td>{{ scan.scan_type }}</td>
+                            <td>{{ scan.timestamp }}</td>
+                            <td>
+                                <!-- Link to view the scan details -->
+                                <a href="{{ url_for('view_result', scan_id=scan.id) }}" class="btn btn-info">View Results</a>
+                                <form action="{{ url_for('delete_scan', scan_id=scan.id) }}" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-center mt-3">No scan history available.</p>
+        {% endif %}
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">🔄 Run Another Scan</a>
+    </div>
+</div>
+{% endblock %}

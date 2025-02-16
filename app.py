@@ -38,10 +38,92 @@ SCAN_OPTIONS = {
     "--script=ssl-heartbleed -v": "SSL Vulnerability Scan (Heartbleed) - Verbose"
 }
 
-# Home route, redirects to Nmap scanner page
+MASSCAN_OPTIONS = {
+    "-p80 192.168.1.0/24": "Basic Scan (Port 80) - Subnet",
+    "-p1-65535 192.168.1.0/24 --rate=1000": "Full Port Scan (All Ports, Rate 1000) - Subnet",
+    "--rate=500 192.168.1.0/24": "Rate Limiting (Rate 500) - Subnet",
+    "-p80,443,8080 192.168.1.0/24": "Multiple Ports (80, 443, 8080) - Subnet",
+    "--exclude=192.168.1.100,192.168.1.101 192.168.1.0/24": "Exclude IPs (100, 101) - Subnet",
+    "--include=192.168.1.1,192.168.1.2 -p80": "Include IPs (1, 2) - Port 80",
+    "-p53 --rate=500 192.168.1.0/24": "Scan Specific Protocol (DNS on Rate 500) - Subnet"
+}
+
+@app.context_processor
+def inject_request():
+    return dict(request=request)
+
+
+# Home route
 @app.route('/')
 def index():
-    return redirect(url_for('nmap_index'))  # Redirect to Nmap scanner page
+    return render_template('home.html')
+
+
+# Masscan functionality
+@app.route('/masscan', methods=['GET', 'POST'])
+def masscan_index():
+    if request.method == 'POST':
+        target_subnet = request.form.get('target_subnet')
+        ports = request.form.get('ports')
+        rate = request.form.get('rate')
+
+        # Define the output file path
+        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        output_file = f"masscan_results_{timestamp}.txt"
+
+        # Construct the Masscan command
+        masscan_command = [
+            "sudo",
+            "masscan",
+            target_subnet,
+            "--rate", rate,
+            "-p", ports,
+            "-oN", output_file
+        ]
+
+        try:
+            # Execute the Masscan command
+            subprocess.run(masscan_command, check=True)
+            
+            # Capture the scan output from the file
+            with open(output_file, 'r') as f:
+                masscan_output = f.read()
+            
+            # Create the scan record
+            new_scan = ScanHistory(target_ip=target_subnet, scan_type='masscan', 
+                                   scan_output=masscan_output, verbose_output='', timestamp=datetime.datetime.utcnow())
+            db.session.add(new_scan)
+            db.session.commit()
+            # Pass the new scan object to results page
+            return render_template('masscan/results.html', scan=new_scan)
+        except Exception as e:
+            flash(f"An error occurred: {str(e)}")
+            return redirect(url_for('masscan_index'))  # Ensure this redirects correctly to Masscan index
+    return render_template('masscan/index.html', masscan_options=MASSCAN_OPTIONS)
+
+@app.route('/masscan/history')
+def masscan_history():
+    scans = ScanHistory.query.filter_by(scan_type='masscan').order_by(ScanHistory.timestamp.desc()).all()
+    return render_template('masscan/history.html', scans=scans)
+
+@app.route('/masscan/view_result/<int:scan_id>')
+def masscan_view_result(scan_id):
+    scan = ScanHistory.query.get(scan_id)
+    if not scan:
+        flash('Scan record not found.')
+        return redirect(url_for('masscan_history'))
+    return render_template('masscan/results.html', scan=scan)
+
+@app.route('/masscan/delete_scan/<int:scan_id>', methods=['POST'])
+def masscan_delete_scan(scan_id):
+    scan_to_delete = ScanHistory.query.get(scan_id)
+    if scan_to_delete:
+        db.session.delete(scan_to_delete)
+        db.session.commit()
+        flash('Scan record deleted successfully.')
+    else:
+        flash('Scan record not found.')
+    return redirect(url_for('masscan_history'))
 
 # Nmap functionality
 @app.route('/nmap', methods=['GET', 'POST'])

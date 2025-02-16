@@ -1,52 +1,93 @@
 {% extends 'base.html' %}
+<!-- Extends the base template (base.html) for layout consistency -->
 
 {% block content %}
+<!-- Defines the block named `content` where this page's content will be placed -->
 <div class="container mt-5">
+    <!-- Bootstrap container with a margin-top of 5 units to add space at the top -->
+
     <div class="card shadow-lg p-4">
+        <!-- Card element with shadow effect and padding for better aesthetics -->
+
         <h2 class="text-center">🔍 Nmap Scanner</h2>
+        <!-- Centered heading for the Nmap Scanner section -->
 
         {% with messages = get_flashed_messages(with_categories=true) %}
+            <!-- Retrieves any flashed messages (e.g., error or success notifications) -->
             {% if messages %}
+                <!-- Checks if there are any messages -->
                 <div class="mt-3">
+                    <!-- Adds a margin-top of 3 units for spacing -->
+
                     {% for category, message in messages %}
+                        <!-- Loops through each message -->
                         <div class="alert alert-warning">{{ message }}</div>
+                        <!-- Displays the message as an alert with a warning category -->
                     {% endfor %}
                 </div>
             {% endif %}
         {% endwith %}
+        <!-- End of message handling block -->
 
         <!-- Form to run Nmap scan -->
         <form method="POST" action="/nmap" class="mt-4">
+            <!-- Form for submitting the Nmap scan request with POST method, targeting /nmap endpoint -->
+
             <div class="mb-3">
+                <!-- Margin-bottom of 3 units to separate form fields -->
+
                 <label for="target_ip" class="form-label">Enter IP Address:</label>
+                <!-- Label for the target IP input field -->
+
                 <input type="text" id="target_ip" name="target_ip" class="form-control" placeholder="e.g. 192.168.1.1" required>
+                <!-- Input field for entering the target IP address, with validation to be required -->
             </div>
 
             <!-- Dropdown for selecting scan type -->
             <div class="mb-3">
+                <!-- Margin-bottom of 3 units -->
+
                 <label for="scan_type" class="form-label">Select Scan Type:</label>
+                <!-- Label for the scan type dropdown -->
+
                 <select id="scan_type" name="scan_type" class="form-select">
                     {% for flag, description in scan_options.items() %}
+                        <!-- Loops through each scan option available -->
                         <option value="{{ flag }}">{{ description }}</option>
+                        <!-- Each option corresponds to a specific Nmap flag and its description -->
                     {% endfor %}
+
                     <option value="custom">Custom Command</option>
+                    <!-- Option for entering a custom Nmap command -->
                 </select>
             </div>
 
             <!-- Nmap Command input field, updated based on scan selection -->
             <div class="mb-3">
+                <!-- Margin-bottom of 3 units -->
+
                 <label for="custom_command" class="form-label">Nmap Command:</label>
+                <!-- Label for the custom Nmap command input field -->
+
                 <input type="text" id="custom_command" name="custom_command" class="form-control" value="-T4 -F">
+                <!-- Input field for entering a custom Nmap command, with default value set -->
             </div>
 
             <!-- Submit button for running the scan -->
             <button type="submit" class="btn btn-primary w-100">Run Nmap</button>
+            <!-- Button to submit the form and run the Nmap scan -->
         </form>
+
     </div>
 
     <!-- Button for running another scan -->
     <div class="text-center mt-4">
+        <!-- Centered text with margin-top of 4 units -->
+
         <a href="{{ url_for('nmap_index') }}" class="btn btn-outline-secondary">🔄 Run Another Scan</a>
+        <!-- Link button to navigate back to the Nmap index page -->
     </div>
+
 </div>
 {% endblock %}
+<!-- End of content block -->

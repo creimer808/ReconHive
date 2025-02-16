@@ -1,10 +1,8 @@
 {% extends 'base.html' %}
-
 {% block content %}
 <div class="container mt-5">
     <div class="card shadow-lg p-4">
-        <h2 class="text-center">🗂 Scan History</h2>
-
+        <h2 class="text-center">🗂 Masscan Scan History</h2>
         {% if scans %}
             <table class="table table-bordered mt-4">
                 <thead>
@@ -19,14 +17,14 @@
                 <tbody>
                     {% for scan in scans %}
                         <tr>
-                            <td>{{ scan.id }}</td>
+                            <td>{{ loop.index }}</td>
                             <td>{{ scan.target_ip }}</td>
                             <td>{{ scan.scan_type }}</td>
                             <td>{{ scan.timestamp }}</td>
                             <td>
-                                <!-- Link to view the scan details -->
-                                <a href="{{ url_for('view_result', scan_id=scan.id) }}" class="btn btn-info">View Results</a>
-                                <form action="{{ url_for('delete_scan', scan_id=scan.id) }}" method="POST" style="display:inline;">
+                                <!-- Use masscan_view_result instead of view_result -->
+                                <a href="{{ url_for('masscan_view_result', scan_id=scan.id) }}" class="btn btn-info">View Results</a>
+                                <form action="{{ url_for('masscan_delete_scan', scan_id=scan.id) }}" method="POST" style="display:inline;">
                                     <button type="submit" class="btn btn-danger">Delete</button>
                                 </form>
                             </td>
@@ -38,9 +36,8 @@
             <p class="text-center mt-3">No scan history available.</p>
         {% endif %}
     </div>
-
     <div class="text-center mt-4">
-        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">🔄 Run Another Scan</a>
+        <a href="{{ url_for('masscan_index') }}" class="btn btn-outline-secondary">🔄 Run Another Scan</a>
     </div>
 </div>
 {% endblock %}

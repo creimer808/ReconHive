@@ -1,31 +1,30 @@
 {% extends 'base.html' %}
-
 {% block content %}
 <div class="container mt-5">
     <div class="card shadow-lg p-4">
-        <h2 class="text-center">📊 Nmap Scan Results</h2>
-
+        <h2 class="text-center">📊 Masscan Scan Results</h2>
         <!-- Display verbose output -->
-        <h4>Verbose Output</h4>
-        <pre class="mt-4 p-3 bg-dark text-light rounded">{{ scan.verbose_output }}</pre>
-
+        {% if scan.verbose_output %}
+            <h4>Verbose Output</h4>
+            <pre class="mt-4 p-3 bg-dark text-light rounded">{{ scan.verbose_output }}</pre>
+        {% else %}
+            <p class="text-center mt-3">No Masscan verbose output available.</p>
+        {% endif %}
         <!-- Display scan results -->
         <h4>Scan Results</h4>
         {% if scan.scan_output %}
             <pre class="mt-4 p-3 bg-dark text-light rounded">{{ scan.scan_output }}</pre>
         {% else %}
-            <p class="text-center mt-3">No Nmap output available.</p>
+            <p class="text-center mt-3">No Masscan output available.</p>
         {% endif %}
     </div>
-
-    <!-- Button to run another scan -->
+    <!-- Buttons to run another scan and go to history -->
     <div class="text-center mt-4">
-        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">🔄 Run Another Scan</a>
+        <a href="{{ url_for('masscan_index') }}" class="btn btn-outline-secondary">🔄 Run Another Scan</a>
     </div>
-
-    <!-- Button to go to scan history -->
     <div class="text-center mt-4">
-        <a href="{{ url_for('history') }}" class="btn btn-outline-secondary">🗂 View Scan History</a>
+        <!-- Updated href to use 'masscan_history' instead of 'history' -->
+        <a href="{{ url_for('masscan_history') }}" class="btn btn-outline-secondary">🗂 View Scan History</a>
     </div>
 </div>
 {% endblock %}

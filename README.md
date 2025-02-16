@@ -44,8 +44,3 @@ For details, see the [LICENSE](LICENSE) file.
 ## Contributing
 We welcome contributions! Feel free to submit a PR or open an issue to improve ReconHive.
 
-## Contact
-📧 **Email:** your.email@example.com
-🐙 **GitHub:** [your-github](https://github.com/your-github)
-🐝 **Official Website:** [ReconHive.com](https://ReconHive.com)
-
